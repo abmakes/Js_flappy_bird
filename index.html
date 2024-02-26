@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <title>Game</title>
 </head>
 <body>
-    <canvas id="canvas1"></canvas>
-    
-    <script src="assets/scripts/player.js"></script>
-    <script src="assets/scripts/main.js"></script>
+  <canvas id="canvas1"></canvas>
+
+  <div class="assets">
+    <img src="assets/images/trees_bg.png" alt="trees-background" id="background">
+  </div>
+
+
+  <script src="assets/scripts/background.js"></script>
+  <script src="assets/scripts/player.js"></script>
+  <script src="assets/scripts/obstacles.js"></script>
+  <script src="assets/scripts/main.js"></script>
 </body>
 </html>
