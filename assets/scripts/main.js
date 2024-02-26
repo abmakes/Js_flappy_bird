@@ -31,6 +31,13 @@ class Game {
       this.resize( e.currentTarget.innerWidth, e.currentTarget.innerHeight)
     })  
 
+    // restart game
+    if (this.gameOver) {
+      window.addEventListener("keydown", e => {
+
+      })
+    }
+
     // mouse events
     this.canvas.addEventListener("mousedown", e => {
     this.player.flap();
@@ -41,8 +48,11 @@ class Game {
       if (e.key === "ArrowUp" || e.key === " " || e.key === "Enter") {
         this.player.flap()
       }
-      if (e.key === "Shift" || e.key.toLowerCase() === "C") {
+      if (e.key === "Shift" || e.key.toLowerCase() === "c") {
         this.player.startCharge()
+      }
+      if (this.gameOver && e.key.toLowerCase() === "r") {
+        this.resize(window.innerWidth, window.innerHeight);
       }
     })
 
@@ -143,28 +153,27 @@ class Game {
     // after item draws on the right shift alignment to left
     this.ctx.textAlign = 'left'
     this.ctx.fillText('TIME: ' + this.formatTimer(), 10, 30);
+    /// Game over screen
     if (this.gameOver){
       if (this.player.collided){
-        this.message1 = "Try again"
+        this.message1 = "GAME OVER"
         this.message2 = "Collision time " + this.formatTimer() + ' seconds.';
       } else if (this.obstacles.length <= 0) {
-        this.message1 = "Smashed it!"
+        this.message1 = "EXCELLENT!"
         this.message2 = "Can you do it faster than " + this.formatTimer() + ' seconds?';
       }
-      this.ctx.textAlign = "left"
-      this.ctx.font ="50px Protest Riot"
-      this.ctx.fillText('GAME OVER', this.width * 0.40, this.height*0.4)
+      this.ctx.textAlign = "center"
       this.ctx.font ="30px Protest Riot"
-      this.ctx.fillText(this.message1, this.width * 0.40, this.height*0.4 + 40)
+      this.ctx.fillText(this.message1, this.width * 0.50, this.height*0.5)
       this.ctx.font ="20px Protest Riot"
-      this.ctx.fillText(this.message2, this.width * 0.40, this.height*0.4 + 75)
+      this.ctx.fillText(this.message2, this.width * 0.50, this.height*0.5 + 35)
       this.ctx.font ="30px Protest Riot"
-      this.ctx.fillText('Press "R" to try again', this.width * 0.40, this.height*0.4 + 110)
+      this.ctx.fillText('Press "R" to try again', this.width * 0.50, this.height*0.5 + 75)
     }
 
     //// Energy display
     if (this.player.energy <= 20) this.ctx.fillStyle = "red";
-    else if (this.player.energy >= this.player.maxEnergy) this.ctx.fillStyle = "orangered";
+    else if (this.player.energy >= this.player.maxEnergy) this.ctx.fillStyle = "lightgreen";
     for (let i = 0; i < this.player.energy; i++) {
       this.ctx.fillRect(10, this.height - 10 - this.player.barSize * i, 5 * this.player.barSize, this.player.barSize)
     }

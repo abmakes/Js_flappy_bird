@@ -3,8 +3,8 @@ class Player {
     this.game = game;
     this.x = 20;
     this.y;
-    this.spriteWidth = 200;
-    this.spriteHeight = 200;
+    this.spriteWidth = 180;
+    this.spriteHeight = 180;
     this.width;
     this.height;
     this.speedY;
@@ -20,27 +20,37 @@ class Player {
     this.minEnergy = 15;
     this.barSize;
     this.charging;
+    this.image = document.getElementById('player_bird');
+    this.frameY; /// Used to reference the sprite sheet images
   }
   draw() {
-    this.game.ctx.strokeRect(this.x, this.y, this.width, this.height)
+    // this.game.ctx.strokeRect(this.x, this.y, this.width, this.height)
+    /// SPRITE SHEET DRAWING  /// where to start (sourceX, SourceY), how big and are to cut out (sourceW, SourceH) Where to put it (this.x, this.y), how big to display it (this.width, this.height)
+    this.game.ctx.drawImage(this.image, 0, this.frameY * this.spriteHeight, 180, 180, this.x, this.y, this.width, this.height);
     /// Collision detection
     this.game.ctx.beginPath();
     this.game.ctx.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2);
-    this.game.ctx.stroke();
+    // this.game.ctx.stroke();
   }
   update() {
     this.handleEnergy()
+    /// check if player is moving down set wings
+    if (this.speedY >= 0) this.wingsUp();
     this.y += this.speedY;
     // needs to update as it oves up and down
     this.collisionY = this.y + this.height * 0.5;
     if (!this.isTouchingBottom() && !this.charging) {
       this.speedY += this.game.gravity
     } else {
-      this.spedY = 0
+      this.speedY = 0
     }
     //bottom boundary
     if (this.isTouchingBottom()) {
       this.y = this.game.height - this.height;
+    }
+    //bottom boundary
+    if (this.charging && !this.isTouchingTop) {
+      this.speedY = 0
     }
   }
   resize () {
@@ -59,10 +69,15 @@ class Player {
     this.collided = false;
     // scale energy bars
     this.barSize = Math.floor(5 * this.game.ratio);
+    // Player starting sprite image
+    this.wingsIdle();
+    this.charging = false;
+
   }
       // special ability
   startCharge() {
     this.charging = true;
+    this.wingsCharge()
     this.game.speed = this.game.maxSpeed;
   }
   stopCharge() {
@@ -70,10 +85,10 @@ class Player {
     this.game.speed = this.game.minSpeed;
   }
   isTouchingTop() {
-    return this.y <= 0;
+    this.y <= 0;
   }
   isTouchingBottom() {
-    return this.y >= this.game.height - this.height
+      return this.y >= this.game.height - this.height;
   }
   handleEnergy() {
     if (this.game.eventUpdate) {
@@ -93,8 +108,19 @@ class Player {
     this.stopCharge();
     if (!this.isTouchingTop()){
       this.speedY = -this.flapSpeed;
+      this.wingsDown();
     }
   }
-
-
+  wingsIdle(){
+    if (!this.charging) this.frameY = 0;
+  }
+  wingsUp(){
+    if (!this.charging) this.frameY = 1;
+  }
+  wingsDown(){
+    if (!this.charging) this.frameY = 2;
+  }
+  wingsCharge(){
+    this.frameY = 3;
+  }
 }
