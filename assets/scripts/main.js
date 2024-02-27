@@ -8,6 +8,7 @@ class Game {
     this.ratio = this.height / this.baseHeight;
     this.player = new Player(this);
     this.background = new Background(this);
+    this.sound = new AudioControl();
     this.obstacles = [];
     this.numberOfObstacles = 10;
     this.speed;
@@ -32,15 +33,13 @@ class Game {
     })  
 
     // restart game
-    if (this.gameOver) {
-      window.addEventListener("keydown", e => {
-
-      })
-    }
+    document.getElementById("restart").addEventListener("mousedown", e => {
+          this.resize(window.innerWidth, window.innerHeight);
+    })
 
     // mouse events
     this.canvas.addEventListener("mousedown", e => {
-    this.player.flap();
+      this.player.flap();
     })
 
     // keyboard event
@@ -59,7 +58,11 @@ class Game {
     // PHONE CONTROLS // touch events
     this.canvas.addEventListener("touchstart" , e => {
       this.player.flap();
+      console.log("touch")
       this.touchStartX = e.changedTouches[0].pageX;
+    })
+    document.addEventListener("touchend", e => {
+      if (e.target.id === 'restart') this.resize(window.innerWidth, window.innerHeight);
     })
     this.canvas.addEventListener("touchmove" , e => {
       if (e.changedTouches[0].pageX - this.touchStartX > this.swipeDistance) {
@@ -93,6 +96,7 @@ class Game {
       obstacle.resize();
     });
     this.score = 0;
+    document.getElementById('restart').style.display = 'none'
     this.gameOver = false;
     this.timer = 0;
   }
@@ -147,6 +151,22 @@ class Game {
     }
   }
 
+  triggerGameOver(){
+    if (!this.gameOver) {
+      this.gameOver = true; // incase of accidental funciton trigger set gameover
+      if (this.obstacles.length <= 0){
+        this.sound.play(this.sound.win);
+        this.message1 = "EXCELLENT!"
+        this.message2 = "Can you do it faster than " + this.formatTimer() + ' seconds?';
+      } else {
+        this.sound.play(this.sound.lose);
+        this.message1 = "GAME OVER"
+        this.message2 = "Collision time " + this.formatTimer() + ' seconds.';
+      }
+    }
+  }
+
+  // Function runs with every animation frame so remove unecessary items like game end display
   drawStatusText() {
     this.ctx.save();
     this.ctx.fillText('SCORE: ' + this.score, this.width - 10, 30);
@@ -155,24 +175,16 @@ class Game {
     this.ctx.fillText('TIME: ' + this.formatTimer(), 10, 30);
     /// Game over screen
     if (this.gameOver){
-      if (this.player.collided){
-        this.message1 = "GAME OVER"
-        this.message2 = "Collision time " + this.formatTimer() + ' seconds.';
-      } else if (this.obstacles.length <= 0) {
-        this.message1 = "EXCELLENT!"
-        this.message2 = "Can you do it faster than " + this.formatTimer() + ' seconds?';
-      }
       this.ctx.textAlign = "center"
       this.ctx.font ="30px Protest Riot"
       this.ctx.fillText(this.message1, this.width * 0.50, this.height*0.5)
       this.ctx.font ="20px Protest Riot"
       this.ctx.fillText(this.message2, this.width * 0.50, this.height*0.5 + 35)
-      this.ctx.font ="30px Protest Riot"
-      this.ctx.fillText('Press "R" to try again', this.width * 0.50, this.height*0.5 + 75)
+      document.getElementById('restart').style.display = 'block'
     }
 
     //// Energy display
-    if (this.player.energy <= 20) this.ctx.fillStyle = "red";
+    if (this.player.energy <= this.player.minEnergy) this.ctx.fillStyle = "red";
     else if (this.player.energy >= this.player.maxEnergy) this.ctx.fillStyle = "lightgreen";
     for (let i = 0; i < this.player.energy; i++) {
       this.ctx.fillRect(10, this.height - 10 - this.player.barSize * i, 5 * this.player.barSize, this.player.barSize)

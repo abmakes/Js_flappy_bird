@@ -15,7 +15,7 @@ class Player {
     this.collisionRadius = this.width * 0.5;
     this.collided;
     // special ability
-    this.energy = 30;
+    this.energy = 25;
     this.maxEnergy = this.energy * 2;
     this.minEnergy = 15;
     this.barSize;
@@ -23,6 +23,7 @@ class Player {
     this.image = document.getElementById('player_bird');
     this.frameY; /// Used to reference the sprite sheet images
   }
+
   draw() {
     // this.game.ctx.strokeRect(this.x, this.y, this.width, this.height)
     /// SPRITE SHEET DRAWING  /// where to start (sourceX, SourceY), how big and are to cut out (sourceW, SourceH) Where to put it (this.x, this.y), how big to display it (this.width, this.height)
@@ -32,6 +33,7 @@ class Player {
     this.game.ctx.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2);
     // this.game.ctx.stroke();
   }
+
   update() {
     this.handleEnergy()
     /// check if player is moving down set wings
@@ -53,6 +55,7 @@ class Player {
       this.speedY = 0
     }
   }
+
   resize () {
     this.width = this.spriteWidth * this.game.ratio;
     this.height = this.spriteHeight * this.game.ratio;
@@ -68,35 +71,45 @@ class Player {
     // on gamerestart collided false
     this.collided = false;
     // scale energy bars
+    this.energy = 25;
     this.barSize = Math.floor(5 * this.game.ratio);
     // Player starting sprite image
     this.wingsIdle();
     this.charging = false;
 
   }
-      // special ability
+
+  // special ability
   startCharge() {
-    this.charging = true;
-    this.wingsCharge()
-    this.game.speed = this.game.maxSpeed;
+    if (this.energy >= this.minEnergy && !this.charging) {
+      this.charging = true;
+      this.wingsCharge()
+      this.game.speed = this.game.maxSpeed;
+      this.game.sound.play(this.game.sound.charge);
+    } else {
+      this.stopCharge();
+    }
   }
   stopCharge() {
     this.charging = false;
     this.game.speed = this.game.minSpeed;
   }
+
+  // Boundaries
   isTouchingTop() {
     this.y <= 0;
   }
   isTouchingBottom() {
       return this.y >= this.game.height - this.height;
   }
+
   handleEnergy() {
     if (this.game.eventUpdate) {
       if (this.energy < this.maxEnergy) {
         this.energy += 1; 
       }
       if (this.charging){
-        this.energy -= 4;
+        this.energy -= 5;
         if (this.energy <= 0){
           this.energy = 0;
           this.stopCharge();
@@ -104,13 +117,16 @@ class Player {
       }
     }
   }
+
   flap() {
     this.stopCharge();
     if (!this.isTouchingTop()){
       this.speedY = -this.flapSpeed;
       this.wingsDown();
+      this.game.sound.play(this.game.sound.flap);
     }
   }
+
   wingsIdle(){
     if (!this.charging) this.frameY = 0;
   }

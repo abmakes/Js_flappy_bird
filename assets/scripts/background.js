@@ -8,10 +8,12 @@ class Background {
     this.scaleHeight;
     this.x;
   }
+
   update() {
     this.x -= this.game.speed;
     if (this.x <= -this.scaleWidth) this.x = 0;
   }
+
   draw() {
     this.game.ctx.drawImage(this.image, this.x, 0, this.scaleWidth, this.scaleHeight)
     this.game.ctx.drawImage(this.image, this.x + this.scaleWidth - 1, 0, this.scaleWidth, this.scaleHeight)
@@ -19,6 +21,7 @@ class Background {
       this.game.ctx.drawImage(this.image, this.x + this.scaleWidth * 2 - 2, 0, this.scaleWidth, this.scaleHeight)
     }
   }
+  
   resize(){
     this.scaleWidth = this.width * this.game.ratio
     this.scaleHeight = this.height * this.game.ratio
