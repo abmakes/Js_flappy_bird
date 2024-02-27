@@ -35,8 +35,8 @@ class Obstacle {
     if (this.isOffScreen()) {
       this.markForDeletion = true;
       this.game.obstacles = this.game.obstacles.filter(obstacle => !obstacle.markForDeletion);
-      if (this.game.obstacles.length === 0) this.game.triggerGameOver();
       if (!this.game.gameOver) this.game.score++;
+      if (this.game.obstacles.length === 0) this.game.triggerGameOver();
     }
     if (this.game.checkCollision(this, this.game.player)){
       // set flag on player

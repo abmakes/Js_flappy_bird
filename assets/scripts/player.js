@@ -48,7 +48,7 @@ class Player {
     }
     //bottom boundary
     if (this.isTouchingBottom()) {
-      this.y = this.game.height - this.height;
+      return this.y >= this.game.height - this.height - this.game.bottomMargin;
     }
     //bottom boundary
     if (this.charging && !this.isTouchingTop) {
@@ -95,12 +95,12 @@ class Player {
     this.game.speed = this.game.minSpeed;
   }
 
-  // Boundaries
+  // Boundaries return true or false
   isTouchingTop() {
-    this.y <= 0;
+    return this.y <= 0;
   }
   isTouchingBottom() {
-      return this.y >= this.game.height - this.height;
+    return this.y >= this.game.height - this.height - this.game.bottomMargin;
   }
 
   handleEnergy() {

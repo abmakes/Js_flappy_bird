@@ -23,7 +23,8 @@ class Game {
     this.eventInterval = 150;
     this.eventUpdate = false
     this.touchStartX;
-    this.swipeDistance = 50;
+    this.swipeDistance = 30;
+    this.bottomMargin =Math.floor(50 * this.ratio);
 
 
     this.resize(window.innerWidth, window.innerHeight);
@@ -41,6 +42,11 @@ class Game {
     this.canvas.addEventListener("mousedown", e => {
       this.player.flap();
     })
+    this.canvas.addEventListener("mouseup", e => {
+      setTimeout( () => {
+        this.player.wingsUp();
+      } , 50);
+    })
 
     // keyboard event
     window.addEventListener("keydown", e => {
@@ -54,22 +60,32 @@ class Game {
         this.resize(window.innerWidth, window.innerHeight);
       }
     })
+    window.addEventListener("keyup", e => {
+      setTimeout( () => {
+        this.player.wingsUp();
+      } , 50);
+    })
 
     // PHONE CONTROLS // touch events
-    this.canvas.addEventListener("touchstart" , e => {
-      this.player.flap();
-      console.log("touch")
-      this.touchStartX = e.changedTouches[0].pageX;
-    })
-    document.addEventListener("touchend", e => {
-      if (e.target.id === 'restart') this.resize(window.innerWidth, window.innerHeight);
-    })
     this.canvas.addEventListener("touchmove" , e => {
-      if (e.changedTouches[0].pageX - this.touchStartX > this.swipeDistance) {
-        console.log("swipe")
-        this.player.startCharge();
-      }    
+      e.preventDefault(); // stops the screen from sliding on some devices
     })
+    this.canvas.addEventListener("touchstart" , e => {
+      this.touchStartX = e.changedTouches[0].pageX; // only used to measure swipe witdh
+    })
+    this.canvas.addEventListener("touchend", e => {
+      //swipe to dash
+      if (e.changedTouches[0].pageX - this.touchStartX > this.swipeDistance) {
+        this.player.startCharge();
+      } else {
+        this.player.flap();
+      }
+    })
+    document.addEventListener("touchend", e => {        
+      ///end screen
+      if (e.target.id === 'restart') this.resize(window.innerWidth, window.innerHeight);   
+    })
+
   } 
   
   resize(width, height) {
@@ -176,10 +192,10 @@ class Game {
     /// Game over screen
     if (this.gameOver){
       this.ctx.textAlign = "center"
-      this.ctx.font ="30px Protest Riot"
+      this.ctx.font ="50px Protest Riot"
       this.ctx.fillText(this.message1, this.width * 0.50, this.height*0.5)
-      this.ctx.font ="20px Protest Riot"
-      this.ctx.fillText(this.message2, this.width * 0.50, this.height*0.5 + 35)
+      this.ctx.font ="30px Protest Riot"
+      this.ctx.fillText(this.message2, this.width * 0.50, this.height*0.5 + 45)
       document.getElementById('restart').style.display = 'block'
     }
 
