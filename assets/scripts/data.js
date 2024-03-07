@@ -1,5 +1,6 @@
 class Data {
-  constructor() {
+  constructor(url) {
+    this.url = url;
     this.data =  [{
       "question": "Is she happy?",
       "options": ["Yes, she is.", "No, she isn't.", "Yes, she not.", "No, she is."],
@@ -11,11 +12,17 @@ class Data {
       "correct_answer": "No, they aren't."
     }
     ];
+    this.data2 = null
   }
 
   addToLocalStorage(key) {
     try {
+      const existingValue = localStorage.getItem(key);
+    
+      if (existingValue === null) {
       // Convert data to JSON format before storing
+      this.fetchData(this.url)
+
       const levelData = this.data
       const jsonData = JSON.stringify(levelData);
       
@@ -23,6 +30,9 @@ class Data {
       localStorage.setItem(key, jsonData);
 
       console.log(`Data with key '${key}' added to localStorage.`);
+      } else {
+      console.log(`Data with key '${key}' already exists.`);
+      }
     } catch (error) {
       console.error('Error adding data to localStorage:', error);
     }
@@ -41,6 +51,18 @@ class Data {
       return data;
     } catch (error) {
       console.error('Error fetching data from localStorage:', error);
+    }
+  }
+
+  async fetchData() {
+    try {
+      const response = await fetch(`assets/json/${this.url}`);
+      this.data2 = await response.json();
+      const jsonData = JSON.stringify(this.data2)
+      localStorage.setItem("testies", jsonData);
+      console.log('Data fetched successfully:', this.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
   }
   

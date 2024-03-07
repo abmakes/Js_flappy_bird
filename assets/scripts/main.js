@@ -26,7 +26,7 @@ class Game {
     this.swipeDistance = 30;
     this.bottomMargin = Math.floor(50 * this.ratio);
     /// text contetn for wordgame
-    this.data = new Data()
+    this.data = new Data(`Academy-Stars-1-Unit-3.json`)
     this.level = level
     // this.answers = [];
 
@@ -253,6 +253,7 @@ window.addEventListener('load', function() {
       setTimeout(init(level), 2000)
     } else {
       document.getElementById("menu").style.display = "none";
+       
     
       const canvas = document.getElementById("canvas1");
       const ctx = canvas.getContext('2d');
