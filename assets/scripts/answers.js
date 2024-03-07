@@ -1,4 +1,4 @@
-class Obstacle {
+class Answers {
   constructor(game, x){
     this.game = game;
     this.spriteHeight = 180;
@@ -15,6 +15,11 @@ class Obstacle {
     this.game.ratio
     this.markForDeletion = false;
     this.image = document.getElementById("flower");
+    // questions
+    this.id = 1;
+    this.question = this.game.content[1][0];
+    this.answer = this.game.content[1][2];
+
   }
 
   update(){
@@ -29,8 +34,8 @@ class Obstacle {
       } 
     } else {
       this.speedY += 0.1;// gameover obstacles dissapear
-    }
 
+    }
     // use isofscreen to count the numebr of obstavles and keep score
     if (this.isOffScreen()) {
       this.markForDeletion = true;
@@ -54,6 +59,8 @@ class Obstacle {
     this.game.ctx.beginPath();
     this.game.ctx.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2);
     // this.game.ctx.stroke();
+    this.ctx.font ="30px Protest Riot"
+    this.game.ctx.fillText(this.question, this.width * 0.50, this.height*0.5 + 45)
   }
 
   resize(){

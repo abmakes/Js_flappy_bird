@@ -1,5 +1,5 @@
 class Game {
-  constructor (canvas, context) {
+  constructor (canvas, context, level) {
     this.canvas = canvas;
     this.ctx = context;
     this.width = this.canvas.width;
@@ -24,8 +24,11 @@ class Game {
     this.eventUpdate = false
     this.touchStartX;
     this.swipeDistance = 30;
-    this.bottomMargin =Math.floor(50 * this.ratio);
-
+    this.bottomMargin = Math.floor(50 * this.ratio);
+    /// text contetn for wordgame
+    this.data = new Data()
+    this.level = level
+    // this.answers = [];
 
     this.resize(window.innerWidth, window.innerHeight);
 
@@ -89,6 +92,8 @@ class Game {
   } 
   
   resize(width, height) {
+    // console.log(this.data.loadJSONfiles("Academy-Stars-1-Unit-3.json"))
+    this.data.addToLocalStorage("level")
     this.canvas.width = width;
     this.canvas.height = height;
     this.ctx.fillStyle = 'black';
@@ -108,9 +113,13 @@ class Game {
     this.background.resize();
     this.player.resize(); 
     this.createObstacles();
+    // this.createAnswers(content);
     this.obstacles.forEach(obstacle => {
       obstacle.resize();
     });
+    // this.answers.forEach(answer => {
+    //   answer.resize();
+    // });
     this.score = 0;
     document.getElementById('restart').style.display = 'none'
     this.gameOver = false;
@@ -142,13 +151,30 @@ class Game {
       }
   }
 
+  // createAnswers(content) {
+  //   this.answers = [];
+  //   const firstX = this.baseHeight * this.ratio;
+  //   const answerSpacing = 500 * this.ratio;
+  //   for (let i=0; i < this.content.length; i++){
+  //     this.answers.push(new Answer(this, firstX + i * answerSpacing))
+  //   }
+  // }
+
   checkCollision(a,b){
     const dx = a.collisionX - b.collisionX;
     const dy = a.collisionY - b.collisionY;
     const distance = Math.hypot(dx, dy);
-    const sumOfRadii = a.collisionRadius + b.collisionRadius
+    const sumOfRadii = a.collisionRadius + b.collisionRadius;
     return distance <= sumOfRadii
   }
+
+  // checkACollision(a,b,questionId){
+  //   const dx = a.collisionX - b.collisionX;
+  //   const dy = a.collisionY - b.collisionY;
+  //   const distance = Math.hypot(dx, dy);
+  //   const sumOfRadii = a.collisionRadius + b.collisionRadius
+  //   return [distance <= sumOfRadii, this.checkCorrect(a, questionId)]
+  // }
 
   formatTimer(){
     return (this.timer * 0.001).toFixed(1);
@@ -208,27 +234,52 @@ class Game {
     this.ctx.restore();
   }
 
+  // checkCorrect(answer, questionId){
+  //   if (this.content[questionId][2] === answer) return alert(true);
+  // }
 }
 
 window.addEventListener('load', function() {
-  const canvas = document.getElementById("canvas1");
-  const ctx = canvas.getContext('2d');
-  canvas.width = 720;
-  canvas.height = 720;
+  let level = 0
 
-  const game = new Game(canvas, ctx);
+  document.getElementById("level-select").addEventListener("change", e => {
+    level = e.target.value
+    init(level)
+  })
 
-  let lastTime = 0
-  /// timestamp is built into requestanimtionframe
-  /// deltTime === timesincelastrender
-  function animate(timeStamp) {
-    const deltaTime = timeStamp - lastTime; // How man ms did it take pc to generate animation frame
-    // if (deltaTime >= 16.67 ) { //this line is for 60fps
-      lastTime = timeStamp
-    // }
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    game.render(deltaTime)
-    if (!this.gameOver) requestAnimationFrame(animate);
+  function init(level) {
+    if ( level === 0 ) {
+      console.log("waiting for level selection")
+      setTimeout(init(level), 2000)
+    } else {
+      document.getElementById("menu").style.display = "none";
+    
+      const canvas = document.getElementById("canvas1");
+      const ctx = canvas.getContext('2d');
+      canvas.style.display = "block";
+      canvas.width = 720;
+      canvas.height = 720;
+  
+      const game = new Game(canvas, ctx, level);
+  
+      let lastTime = 0
+      /// timestamp is built into requestanimtionframe
+      /// deltTime === timesincelastrender
+      function animate(timeStamp) {
+        const deltaTime = timeStamp - lastTime; // How man ms did it take pc to generate animation frame
+        // if (deltaTime >= 16.67 ) { //this line is for 60fps
+          lastTime = timeStamp
+        // }
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        game.render(deltaTime)
+        if (!this.gameOver) requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    }
   }
-  requestAnimationFrame(animate);
+ 
+  // const myData = new Data(); 
+  // myData.onload = () => {
+  //   this.addToLocalStorage('userData');
+  // }
 })
